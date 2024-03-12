@@ -26,6 +26,7 @@ class Authentication extends Controller
                     ['b.general_pass', '=', $request->password]
                 ])
                 ->get();
+                
         if(sizeof($users) > 0){
             return response()->json([
                 'status' => true, 
