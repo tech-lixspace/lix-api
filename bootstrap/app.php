@@ -78,6 +78,7 @@ $app->configure('app');
 
 $app->routeMiddleware([
     'auth_basic' => App\Http\Middleware\Authentication\BasicAuthentication::class,
+    'auth_jwt' => App\Http\Middleware\Authentication\JWTAuthentication::class
 ]);
 
 /*

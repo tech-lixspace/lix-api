@@ -34,7 +34,7 @@ class Authentication extends Controller
                 'data' => $users[0]], 
             200);
         }else{
-            return response()->json(['status' => false, 'messsage' => 'Anuthorized'], 401);
+            return response()->json(['status' => false, 'messsage' => 'Unuthorized'], 401);
         }
     }
 }

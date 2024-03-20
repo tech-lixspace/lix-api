@@ -26,20 +26,18 @@ $router->group(['prefix' => 'auth'], function () use ($router) {
 });
 
 // Menu Routes
-$router->group(['prefix' => 'menu'], function () use ($router) {
-    $router->get('list/{page}/{limit}', function ($page, $limit) {
-        return response()->json(['data' => 2, 'page' => $page, 'limit' => $limit]);
-    });
-    $router->get('detail/{id_menu}', function ($id_menu) {
-        return response()->json(['data' => $id_menu]);
-    });
-    $router->post('create', function () {
-        return response()->json(['data' => 2]);
-    });
-    $router->put('update/{id_menu}', function ($id_menu) {
-        return response()->json(['data' => 2]);
-    });
-    $router->delete('delete/{id_menu}', function ($id_menu) {
-        return response()->json(['data' => $id_menu]);
-    });
+$router->group(['prefix' => 'admin/menu'], function () use ($router) {
+    $router->get('list/{page}/{limit}', ['middleware' => 'auth_jwt','uses' => 'Menu@list']);
+    $router->get('detail/{id_menu}', ['uses' => 'Menu@detail']);
+    $router->post('create', ['uses' => 'Menu@create']);
+    $router->put('update/{id_menu}', ['uses' => 'Menu@update']);
+    $router->delete('delete/{id_menu}', ['uses' => 'Menu@delete']);
+});
+
+$router->group(['prefix' => 'admin/category'], function () use ($router) {
+    $router->get('list/{page}/{limit}', ['uses' => 'Category@list']);
+    $router->get('detail/{id}', ['uses' => 'Category@detail']);
+    $router->post('create', ['uses' => 'Category@create']);
+    $router->put('update/{id}', ['uses' => 'Category@update']);
+    $router->delete('delete/{id}', ['uses' => 'Category@delete']);
 });
