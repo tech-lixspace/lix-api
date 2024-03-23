@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
+/*
+ROLE GUIDE
+1 = Super Admin
+2 = Admin (Branches)
+3 = Chef
+4 = Cashier
+5 = Consumer
+*/
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
@@ -27,17 +36,17 @@ $router->group(['prefix' => 'auth'], function () use ($router) {
 
 // Menu Routes
 $router->group(['prefix' => 'admin/menu'], function () use ($router) {
-    $router->get('list/{page}/{limit}', ['middleware' => 'auth_jwt','uses' => 'Menu@list']);
-    $router->get('detail/{id_menu}', ['uses' => 'Menu@detail']);
-    $router->post('create', ['uses' => 'Menu@create']);
-    $router->put('update/{id_menu}', ['uses' => 'Menu@update']);
-    $router->delete('delete/{id_menu}', ['uses' => 'Menu@delete']);
+    $router->get('list/{page}/{limit}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Menu@list']);
+    $router->get('detail/{id}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Menu@detail']);
+    $router->post('create', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Menu@create']);
+    $router->put('update/{id}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Menu@update']);
+    $router->delete('delete/{id}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Menu@delete']);
 });
 
 $router->group(['prefix' => 'admin/category'], function () use ($router) {
-    $router->get('list/{page}/{limit}', ['uses' => 'Category@list']);
-    $router->get('detail/{id}', ['uses' => 'Category@detail']);
-    $router->post('create', ['uses' => 'Category@create']);
-    $router->put('update/{id}', ['uses' => 'Category@update']);
-    $router->delete('delete/{id}', ['uses' => 'Category@delete']);
+    $router->get('list/{page}/{limit}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Category@list']);
+    $router->get('detail/{id}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Category@detail']);
+    $router->post('create', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Category@create']);
+    $router->put('update/{id}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Category@update']);
+    $router->delete('delete/{id}', ['middleware' => ['auth_jwt', 'role_guard:1,2'], 'uses' => 'Category@delete']);
 });

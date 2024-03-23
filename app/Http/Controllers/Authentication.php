@@ -27,10 +27,13 @@ class Authentication extends Controller
                 ])
                 ->get();
         if(sizeof($users) > 0){
+            $dataToken = new \stdClass();
+            $dataToken->id_user = $users[0]->id;
+            $dataToken->role = $users[0]->role;
             return response()->json([
                 'status' => true, 
                 'messsage' => 'Login success', 
-                'access_token' => $auth->generate_access_token($users[0]->id), 
+                'access_token' => $auth->generate_access_token($dataToken), 
                 'data' => $users[0]], 
             200);
         }else{

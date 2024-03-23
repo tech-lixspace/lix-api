@@ -45,7 +45,7 @@ class JWTAuthentication
             'error' => 'An error while decoding token.'
             ], 400);
         }
-        $test = 'ok';
-        return $next($request, $test);
+        
+        return $next($request);
     }
 }

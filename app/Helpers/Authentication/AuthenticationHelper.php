@@ -26,7 +26,7 @@ class AuthenticationHelper
             'sub' => 123, // Subject of the token
             'iat' => time(), // Time when JWT was issued. 
             'exp' => time() + 60*60, // Expiration time
-            'id_user' => $data
+            'data' => $data
         ];
         
         // As you can see we are passing `JWT_SECRET` as the second parameter that will 

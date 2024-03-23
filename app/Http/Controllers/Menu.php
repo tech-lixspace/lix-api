@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LixMenu;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,105 +17,140 @@ class Menu extends Controller
 
     public function __construct(){}
 
-    public function list(Request $request, $page, $limit, $test){
-        $token = $request->bearerToken();
+    public function list(Request $request, $page, $limit){
         $start = $limit * ($page - 1);
-        $menu = DB::table('lix_menu')
-                ->select('id', 'name', 'description', 'price')
-                ->where([
-                    ['is_delete', '!=', 1]
-                ]);
-        
-        $total_data = $menu->count();        
-        $data = $menu->skip($start)
+        $data = LixMenu::select('id', 'name', 'description', 'price')
+                ->where('is_delete', '!=', 1);
+        $total_data = $data->count();        
+        $data = $data->skip($start)
                     ->take($limit)
                     ->get();
-        
         if($data){
-            $number = ($page * $limit) - $limit;
-            $number += 1;
-            foreach($data as $d){
-                $d->number = $number;
+            if(sizeof($data) > 0){
+                $number = ($page * $limit) - $limit;
                 $number += 1;
+                foreach($data as $d){
+                    $d->number = $number;
+                    $number += 1;
+                }
+                return response()->json([
+                    'status' => true, 
+                    'messsage' => 'Retrieve data success',
+                    'data' => $data,
+                    'total_data' => $total_data], 
+                200);
+            }else{
+                return response()->json([
+                    'status' => false, 
+                    'messsage' => 'Data not found'], 
+                404);
             }
-            return response()->json([
-                'status' => true, 
-                'messsage' => 'Retrieve data success',
-                'data' => $test,
-                'total_data' => $total_data], 
-            200);
         }else{
-            return response()->json(['status' => false, 'messsage' => 'Anuthorized'], 401);
+            return response()->json(['status' => false, 'messsage' => 'Trouble'], 400);
         }
     }
 
-    public function detail(Request $request, $id_menu){
-        $menu = DB::table('lix_menu')
-                ->select('id', 'name', 'description', 'price')
+    public function detail(Request $request, $id){
+        $data = LixMenu::select('id', 'name', 'description', 'price')
                 ->where([
-                    ['id', '=', $id_menu]
+                    ['id', '=', $id],
+                    ['is_delete', '!=', 1]
                 ])
                 ->get();
-        if($menu){
-            return response()->json([
-                'status' => true, 
-                'messsage' => 'Retrieve data success',
-                'data' => $menu], 
-            200);
+        if($data){
+            if(sizeof($data) > 0){
+                return response()->json([
+                    'status' => true, 
+                    'messsage' => 'Retrieve data success',
+                    'data' => $data], 
+                200);
+            }else{
+                return response()->json([
+                    'status' => false, 
+                    'messsage' => 'Data not found'], 
+                404);
+            }
         }else{
-            return response()->json(['status' => false, 'messsage' => 'Anuthorized'], 401);
+            return response()->json(['status' => false, 'messsage' => 'Trouble'], 400);
         }
     }
 
     public function create(Request $request){
-        $menu = DB::table('lix_menu')->insert([
-            'name' => $request->name, 
-            'description' => $request->description,
-            'price' => $request->price,
-            'is_delete' => 0
-        ]);
-        if($menu){
+        $data = new LixMenu;
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->price = $request->price;
+        $data->is_delete = 0;
+
+        $data = $data->save();
+
+        if($data){
             return response()->json([
                 'status' => true, 
                 'messsage' => 'Insert success'], 
             201);
         }else{
-            return response()->json(['status' => false, 'messsage' => 'Anuthorized'], 401);
+            return response()->json(['status' => false, 'messsage' => 'Trouble'], 400);
         }
     }
 
-    public function update(Request $request, $id_menu){
-        $menu = DB::table('lix_menu')
-                    ->where('id', $id_menu)
-                    ->update([
-                        'name' => $request->name, 
-                        'description' => $request->description,
-                        'price' => $request->price,
-                        'timemodified' => date('Y-m-d H:i:s')
-                    ]);
-        if($menu){
+    public function update(Request $request, $id){
+        $data = LixMenu::select('id', 'name')
+                    ->where([
+                        ['id', '=', $id],
+                        ['is_delete', '!=', 1]
+                    ])
+                    ->first();
+
+        if(!isset($data->id)){
+            return response()->json([
+                'status' => false, 
+                'messsage' => 'Data not found'], 
+            404);
+        }
+
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->price = $request->price;
+
+        $data = $data->save();
+
+        if($data){
             return response()->json([
                 'status' => true, 
                 'messsage' => 'Update success'], 
             201);
         }else{
-            return response()->json(['status' => false, 'messsage' => 'Anuthorized'], 401);
+            return response()->json(['status' => false, 'messsage' => 'Trouble'], 400);
         }
     }
 
-    public function delete(Request $request, $id_menu){
-        $menu = DB::table('lix_menu')
-                    ->where('id', $id_menu)
-                    ->update([
-                        'is_delete' => 1
-                    ]);
-        if($menu){
+    public function delete(Request $request, $id){
+        $data = LixMenu::select('id', 'name')
+                    ->where([
+                        ['id', '=', $id],
+                        ['is_delete', '!=', 1]
+                    ])
+                    ->first();
+
+        if(!isset($data->id)){
+            return response()->json([
+                'status' => false, 
+                'messsage' => 'Data not found'], 
+            404);
+        }
+
+        $data->is_delete = 1;
+
+        $data = $data->save();
+
+        if($data){
             return response()->json([
                 'status' => true, 
                 'messsage' => 'Delete success'], 
             201);
         }else{
-            return response()->json(['status' => false, 'messsage' => 'Anuthorized'], 401);
+            return response()->json(['status' => false, 'messsage' => 'Trouble'], 400);
         }
     }
 }

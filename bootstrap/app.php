@@ -25,7 +25,7 @@ $app = new Laravel\Lumen\Application(
 
 $app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -78,7 +78,8 @@ $app->configure('app');
 
 $app->routeMiddleware([
     'auth_basic' => App\Http\Middleware\Authentication\BasicAuthentication::class,
-    'auth_jwt' => App\Http\Middleware\Authentication\JWTAuthentication::class
+    'auth_jwt' => App\Http\Middleware\Authentication\JWTAuthentication::class,
+    'role_guard' => App\Http\Middleware\Role\RoleGuard::class
 ]);
 
 /*
