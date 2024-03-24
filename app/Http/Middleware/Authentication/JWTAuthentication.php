@@ -7,6 +7,7 @@ use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\JWT;
+use App\Models\LixToken;
 class JWTAuthentication
 {
     /**
@@ -22,7 +23,14 @@ class JWTAuthentication
         $token = $request->bearerToken();
         
         if(!$token) {
-            // jika token tidak ada maka langsung kembalikan error dengan kode 401
+            return response()->json([
+                'error' => 'Unauthorized.'
+            ], 401);
+        }
+
+        $findToken = LixToken::firstWhere('access_token', $token);
+        
+        if(!$findToken){
             return response()->json([
                 'error' => 'Unauthorized.'
             ], 401);
